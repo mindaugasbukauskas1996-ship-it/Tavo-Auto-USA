@@ -24,6 +24,6 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  // Tik puslapiams, kuriems reikia sesijos
-  matcher: ["/admin/:path*", "/paskyra/:path*", "/prisijungti", "/auth/:path*"],
+  // Visi puslapiai, išskyrus statinius failus — sesija atnaujinama visur, kur rodomas meniu
+  matcher: ["/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|ico)$).*)"],
 };
