@@ -7,9 +7,11 @@ export default function Home() {
       <h1 className="mt-2 text-4xl font-semibold tracking-tight">Automobiliai iš JAV aukcionų į Klaipėdą</h1>
       <p className="muted mt-4 max-w-xl">
         Copart ir IAAI aukcionai, aiški galutinė kaina su transportu, muitu ir PVM.
-        Katalogas ruošiamas — kol kas galite pasiskaičiuoti importo kainą.
       </p>
-      <Link href="/skaiciuokle" className="btn mt-8 self-start">Skaičiuoti kainą →</Link>
+      <div className="mt-8 flex flex-wrap gap-3">
+        <Link href="/katalogas" className="btn">Žiūrėti automobilius →</Link>
+        <Link href="/skaiciuokle" className="seg">Skaičiuoti kainą</Link>
+      </div>
     </main>
   );
 }

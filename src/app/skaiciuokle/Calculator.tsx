@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { calculateBest, cargoTypeFor } from "@/lib/calculator/calculate.ts";
 import type { SizeClass, VehicleType } from "@/lib/calculator/types.ts";
 import type { CalculatorData } from "@/lib/tariffs.ts";
+import Breakdown from "@/components/Breakdown.tsx";
 
 const SIZES: { value: SizeClass; label: string; hint: string }[] = [
   { value: "regular", label: "Lengvasis", hint: "sedanas, hečbekas, universalas" },
@@ -22,10 +23,6 @@ const DUTY_TYPES: { value: VehicleType; label: string }[] = [
 
 const AUCTIONS = ["Copart", "IAAI", "Kiti"] as const;
 
-const eur = (n: number) =>
-  new Intl.NumberFormat("lt-LT", { style: "currency", currency: "EUR", maximumFractionDigits: 0 }).format(n);
-const usd = (n: number) =>
-  new Intl.NumberFormat("lt-LT", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(n);
 
 export default function Calculator({ data }: { data: CalculatorData }) {
   const [auction, setAuction] = useState<(typeof AUCTIONS)[number]>("Copart");
@@ -174,50 +171,13 @@ export default function Calculator({ data }: { data: CalculatorData }) {
         {outcome.kind === "empty" ? (
           <p className="muted py-12 text-center">{outcome.text}</p>
         ) : (
-          <>
-            <p className="label">Kaina Klaipėdoje su muitu ir PVM</p>
-            <p className="mt-1 text-4xl font-semibold tabular-nums tracking-tight">
-              {eur(outcome.best.result.totalEur)}
-            </p>
-            <p className="muted mt-2 text-sm">
-              Per uostą {portName(outcome.best.route.portCode)}
-              {outcome.best.alternatives > 0 && " (pigiausias iš galimų maršrutų)"}
-            </p>
-
-            <table className="mt-6 w-full text-sm">
-              <thead>
-                <tr className="muted text-left text-xs uppercase tracking-wide">
-                  <th className="pb-2 font-medium">Eilutė</th>
-                  <th className="pb-2 text-right font-medium">USD</th>
-                  <th className="pb-2 text-right font-medium">EUR</th>
-                </tr>
-              </thead>
-              <tbody>
-                {outcome.best.result.lines.map((l) => (
-                  <tr key={l.key} className="border-t border-line">
-                    <td className="py-2">{l.label}</td>
-                    <td className="muted py-2 text-right tabular-nums">{l.usd !== undefined ? usd(l.usd) : ""}</td>
-                    <td className="py-2 text-right tabular-nums">{eur(l.eur)}</td>
-                  </tr>
-                ))}
-                <tr className="border-t-2 border-ink font-semibold">
-                  <td className="pt-3">Iš viso</td>
-                  <td />
-                  <td className="pt-3 text-right tabular-nums">{eur(outcome.best.result.totalEur)}</td>
-                </tr>
-              </tbody>
-            </table>
-
-            {outcome.best.result.warnings.length > 0 && (
-              <ul className="warn mt-6 space-y-1 text-sm">
-                {outcome.best.result.warnings.map((w) => <li key={w}>{w}</li>)}
-              </ul>
-            )}
-            <p className="muted mt-6 text-xs">
-              Kursas: 1 $ = {data.tariffs.usdToEur.toFixed(4)} € + {Math.round(data.tariffs.fxBufferPct * 100)} % buferis.
-              Kaina orientacinė — galutinė suma priklauso nuo muitinės sprendimo.
-            </p>
-          </>
+          <Breakdown
+            result={outcome.best.result}
+            portName={portName(outcome.best.route.portCode)}
+            alternatives={outcome.best.alternatives}
+            usdToEur={data.tariffs.usdToEur}
+            fxBufferPct={data.tariffs.fxBufferPct}
+          />
         )}
       </section>
     </div>

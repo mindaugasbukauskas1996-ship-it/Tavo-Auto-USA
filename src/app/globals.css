@@ -60,6 +60,7 @@ body {
   .card { @apply rounded-2xl border p-6 sm:p-8; background: var(--surface); border-color: var(--line); }
   .warn { @apply rounded-lg px-4 py-3; background: var(--warn-bg); color: var(--warn-ink); }
   .ok { @apply rounded-lg px-4 py-3; background: var(--ok-bg); color: var(--ok-ink); }
+  .badge { @apply rounded-md px-2 py-0.5 text-xs font-semibold; background: var(--surface); color: var(--ink); }
   .nav-link { color: var(--muted); }
   .nav-link:hover { color: var(--ink); }
   .btn { @apply rounded-lg px-5 py-3 font-medium; background: var(--accent); color: var(--accent-ink); }
