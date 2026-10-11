@@ -1,0 +1,59 @@
+@import "tailwindcss";
+
+:root {
+  --bg: #f6f5f1;
+  --surface: #ffffff;
+  --ink: #14171c;
+  --muted: #5d636d;
+  --line: #e3e1da;
+  --accent: #1f4fd1;
+  --accent-ink: #ffffff;
+  --warn-bg: #fff6e0;
+  --warn-ink: #7a5300;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0f1114;
+    --surface: #171a1f;
+    --ink: #eceef1;
+    --muted: #9aa1ab;
+    --line: #2a2f37;
+    --accent: #6d94ff;
+    --accent-ink: #0f1114;
+    --warn-bg: #2d2410;
+    --warn-ink: #f2cf7a;
+  }
+}
+
+@theme inline {
+  --color-ink: var(--ink);
+  --color-line: var(--line);
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-sans);
+}
+
+@layer components {
+  .label { @apply text-xs font-semibold uppercase tracking-wider; color: var(--muted); }
+  .muted { color: var(--muted); }
+  .field {
+    @apply block w-full rounded-lg border px-3 py-2.5 text-base outline-none;
+    background: var(--surface); border-color: var(--line); color: var(--ink);
+  }
+  .field:focus { border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 25%, transparent); }
+  .seg, .opt {
+    @apply cursor-pointer rounded-lg border px-3 py-2.5 text-left transition-colors;
+    background: var(--surface); border-color: var(--line);
+  }
+  .seg { @apply text-center font-medium; }
+  .seg-on, .opt-on { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
+  .opt:focus-within { box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 25%, transparent); }
+  .card { @apply rounded-2xl border p-6 sm:p-8; background: var(--surface); border-color: var(--line); }
+  .warn { @apply rounded-lg px-4 py-3; background: var(--warn-bg); color: var(--warn-ink); }
+  .btn { @apply rounded-lg px-5 py-3 font-medium; background: var(--accent); color: var(--accent-ink); }
+}
