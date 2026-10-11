@@ -1,0 +1,29 @@
+import { NextResponse, type NextRequest } from "next/server";
+import { createServerClient } from "@supabase/ssr";
+
+// Atnaujina Supabase sesijos slapukus kiekvienos užklausos metu.
+export async function proxy(request: NextRequest) {
+  let response = NextResponse.next({ request });
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
+    {
+      cookies: {
+        getAll: () => request.cookies.getAll(),
+        setAll(list, headers) {
+          list.forEach(({ name, value }) => request.cookies.set(name, value));
+          response = NextResponse.next({ request });
+          list.forEach(({ name, value, options }) => response.cookies.set(name, value, options));
+          Object.entries(headers ?? {}).forEach(([k, v]) => response.headers.set(k, v));
+        },
+      },
+    },
+  );
+  await supabase.auth.getUser();
+  return response;
+}
+
+export const config = {
+  // Tik puslapiams, kuriems reikia sesijos
+  matcher: ["/admin/:path*", "/paskyra/:path*", "/prisijungti", "/auth/:path*"],
+};

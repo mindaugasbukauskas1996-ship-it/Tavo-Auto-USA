@@ -10,6 +10,8 @@
   --accent-ink: #ffffff;
   --warn-bg: #fff6e0;
   --warn-ink: #7a5300;
+  --ok-bg: #e6f4ea;
+  --ok-ink: #1d6b36;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -23,6 +25,8 @@
     --accent-ink: #0f1114;
     --warn-bg: #2d2410;
     --warn-ink: #f2cf7a;
+    --ok-bg: #12291a;
+    --ok-ink: #8fd6a5;
   }
 }
 
@@ -55,5 +59,6 @@ body {
   .opt:focus-within { box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 25%, transparent); }
   .card { @apply rounded-2xl border p-6 sm:p-8; background: var(--surface); border-color: var(--line); }
   .warn { @apply rounded-lg px-4 py-3; background: var(--warn-bg); color: var(--warn-ink); }
+  .ok { @apply rounded-lg px-4 py-3; background: var(--ok-bg); color: var(--ok-ink); }
   .btn { @apply rounded-lg px-5 py-3 font-medium; background: var(--accent); color: var(--accent-ink); }
 }

@@ -10,6 +10,11 @@ JAV aukcionų (Copart, IAAI) automobilių importo į Klaipėdą svetainė.
 - DB schema: `supabase/migrations/`.
 - Tarifų Excel → SQL: `scripts/parse_tariffs.py` (bus pakeista admin skydo mygtuku).
 
+- `/prisijungti` — registracija ir prisijungimas (Supabase Auth, el. pašto patvirtinimas).
+- `/admin/tarifai` — tarifų redagavimas: kursas, PVM, fiksuoti mokesčiai, muitas,
+  Copart / IAAI mokesčių lentelės (galima įklijuoti iš Excel), jūros tarifai, pakeitimų istorija.
+  Administratoriaus rolė suteikiama DB: `update profiles set role = 'admin' where email = '…';`
+
 ## Paleidimas
 
 ```bash
