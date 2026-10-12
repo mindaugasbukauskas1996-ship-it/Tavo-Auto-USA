@@ -3,8 +3,8 @@
 import { useActionState, useState } from "react";
 import { signIn, signUp, type AuthState } from "./actions.ts";
 
-export default function AuthForm({ next, linkError }: { next: string; linkError: boolean }) {
-  const [mode, setMode] = useState<"in" | "up">("in");
+export default function AuthForm({ next, linkError, initialMode = "in" }: { next: string; linkError: boolean; initialMode?: "in" | "up" }) {
+  const [mode, setMode] = useState<"in" | "up">(initialMode);
   const [inState, inAction, inPending] = useActionState<AuthState, FormData>(signIn, {});
   const [upState, upAction, upPending] = useActionState<AuthState, FormData>(signUp, {});
   const state = mode === "in" ? inState : upState;

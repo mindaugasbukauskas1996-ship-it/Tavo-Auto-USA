@@ -31,7 +31,7 @@ async function Account() {
 
 export default function Page() {
   return (
-    <main className="mx-auto w-full max-w-3xl px-4 py-10 sm:px-6">
+    <main className="mx-auto w-full flex-1 max-w-3xl px-4 py-10 sm:px-6">
       <h1 className="mb-8 text-3xl font-semibold tracking-tight">Mano paskyra</h1>
       <Suspense fallback={<p className="muted">Kraunama…</p>}>
         <Account />

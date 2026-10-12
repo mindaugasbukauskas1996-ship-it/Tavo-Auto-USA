@@ -1,4 +1,5 @@
 import "server-only";
+import { createClient } from "@supabase/supabase-js";
 
 export interface Lot {
   id: string;
@@ -15,6 +16,7 @@ export interface Lot {
   run_condition: string | null;
   has_key: boolean | null;
   sale_document: string | null;
+  seller_type?: string | null;
   auction_at: string | null;
   auction_state: string | null;
   is_buy_now: boolean | null;
@@ -81,3 +83,47 @@ export async function getLot(id: string): Promise<Lot | null> {
 
 export const lotPath = (id: string) => `/lotas/${id.replace(":", "-")}`;
 export const lotIdFromSlug = (slug: string) => slug.replace(/^(copart|iaai)-/, "$1:");
+
+const LOT_COLUMNS =
+  "id,platform,lot_number,vin,title,year,make,model,odometer_mi,primary_damage,secondary_damage,run_condition,has_key,sale_document,auction_at,auction_state,is_buy_now,current_bid_usd,buy_now_usd,sale_price_usd,outcome,facility_city,facility_state,office_name,send_from,thumb,yard_id,vehicle_type,body_style,fuel,engine,transmission,drive,color";
+
+function publicDb() {
+  return createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!, {
+    auth: { persistSession: false },
+  });
+}
+
+/** Artimiausi aukcionai iš savo DB; jei per mažai — viena API paieška (su talpykla). */
+export async function latestLots(limit = 8): Promise<Lot[]> {
+  const nowIso = new Date().toISOString();
+  const { data } = await publicDb()
+    .from("lots")
+    .select(LOT_COLUMNS)
+    .gt("auction_at", nowIso)
+    .is("outcome", null)
+    .not("thumb", "is", null)
+    .order("auction_at", { ascending: true })
+    .limit(limit);
+  const fromDb = (data ?? []) as Lot[];
+  if (fromDb.length >= Math.min(4, limit)) return fromDb;
+  const res = await searchLots({});
+  return res.lots.slice(0, limit);
+}
+
+export interface Plan {
+  id: number;
+  name: string;
+  deposit_eur: number;
+  max_bid_usd: number;
+  active_bids: number;
+  popular: boolean;
+}
+
+export async function loadPlans(): Promise<Plan[]> {
+  const { data } = await publicDb()
+    .from("deposit_plans")
+    .select("id,name,deposit_eur,max_bid_usd,active_bids,popular")
+    .eq("active", true)
+    .order("sort");
+  return (data ?? []).map((p) => ({ ...p, deposit_eur: Number(p.deposit_eur), max_bid_usd: Number(p.max_bid_usd) }));
+}

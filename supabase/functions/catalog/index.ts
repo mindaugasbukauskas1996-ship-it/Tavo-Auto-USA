@@ -49,10 +49,17 @@ async function takeBudget(): Promise<boolean> {
 
 class QuotaError extends Error {}
 
+// API laukia masyvų šiems filtrams (fuel_type[]=…)
+const ARRAY_PARAMS = new Set(["fuel_type", "damage", "transmission", "drive_type"]);
+
 async function apibara(path: string, params: Record<string, string> = {}) {
   if (!(await takeBudget())) throw new QuotaError("Viršytas valandinis API užklausų limitas");
   const url = new URL(API + path);
-  for (const [k, v] of Object.entries(params)) if (v !== "") url.searchParams.set(k, v);
+  for (const [k, v] of Object.entries(params)) {
+    if (v === "") continue;
+    if (ARRAY_PARAMS.has(k)) url.searchParams.append(`${k}[]`, v);
+    else url.searchParams.set(k, v);
+  }
   const res = await fetch(url, { headers: { "X-API-Key": await key(), Accept: "application/json" } });
   const remaining = res.headers.get("x-subscription-remaining");
   if (remaining !== null) await setState("quota_remaining", remaining);
@@ -136,8 +143,9 @@ async function lotsByIds(ids: string[]) {
 }
 
 const SEARCH_PARAMS = [
-  "platform", "make", "model", "year_from", "year_to", "price_max", "s",
-  "lot_status", "odometer_to", "fuel_type", "damage", "loc_state", "auction_date_from", "auction_date_to",
+  "platform", "make", "model", "year_from", "year_to", "price_min", "price_max", "s",
+  "lot_status", "lot_sub_status", "odometer_from", "odometer_to", "fuel_type", "damage", "run_cond",
+  "transmission", "drive_type", "loc_state", "auction_date_from", "auction_date_to",
 ];
 
 async function search(params: Record<string, string>, cursor: string) {

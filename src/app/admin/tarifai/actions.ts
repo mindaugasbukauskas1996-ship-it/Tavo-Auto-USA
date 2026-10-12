@@ -93,3 +93,27 @@ export async function saveSea(rows: { port: string; size: string; price: string 
     return { ok: true, message: "Jūros tarifai išsaugoti." };
   } catch (e) { return fail(e); }
 }
+
+export type PlanRow = { id: number; name: string; deposit_eur: string; max_bid_usd: string; active_bids: string; popular: boolean; active: boolean };
+
+/** Užstato planai: pavadinimas, užstatas €, maks. statymas $, aktyvių statymų skaičius. */
+export async function savePlans(rows: PlanRow[]): Promise<SaveResult> {
+  try {
+    const db = await adminDb();
+    for (const [i, r] of rows.entries()) {
+      if (!r.name.trim()) throw new Error(`Eilutė ${i + 1}: įveskite pavadinimą.`);
+      const bids = Math.round(num(r.active_bids));
+      if (bids < 1) throw new Error(`Eilutė ${i + 1}: aktyvių statymų turi būti bent 1.`);
+      const { error } = await db.from("deposit_plans").update({
+        name: r.name.trim().slice(0, 40),
+        deposit_eur: num(r.deposit_eur),
+        max_bid_usd: num(r.max_bid_usd),
+        active_bids: bids,
+        popular: r.popular,
+        active: r.active,
+      }).eq("id", r.id);
+      if (error) throw new Error(error.message);
+    }
+    return { ok: true, message: "Planai išsaugoti." };
+  } catch (e) { return fail(e); }
+}

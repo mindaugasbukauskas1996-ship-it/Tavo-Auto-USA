@@ -4,14 +4,14 @@ import { Suspense } from "react";
 import { redirect } from "next/navigation";
 import { currentUser, supabaseServer } from "@/lib/supabase/server.ts";
 import { signOut } from "@/app/prisijungti/actions.ts";
-import { DutyEditor, FeeEditor, SeaEditor, SettingsEditor } from "./Editors.tsx";
+import { DutyEditor, FeeEditor, PlansEditor, SeaEditor, SettingsEditor } from "./Editors.tsx";
 import type { FeeRow } from "./actions.ts";
 
 export const metadata: Metadata = { title: "Tarifai — administravimas" };
 
 const TABLE_LT: Record<string, string> = {
   settings: "Nustatymai", duty_rates: "Muitas", sea_rates: "Jūra",
-  auction_fee_brackets: "Aukciono mokesčiai", towing_routes: "Transportas JAV",
+  auction_fee_brackets: "Aukciono mokesčiai", towing_routes: "Transportas JAV", deposit_plans: "Užstato planai",
 };
 
 function Section({ title, hint, children }: { title: string; hint?: string; children: React.ReactNode }) {
@@ -36,13 +36,14 @@ async function AdminContent() {
   }
 
   const db = await supabaseServer();
-  const [settings, duty, fees, sea, ports, history] = await Promise.all([
+  const [settings, duty, fees, sea, ports, history, plans] = await Promise.all([
     db.from("settings").select("key,label,unit,value").order("key"),
     db.from("duty_rates").select("vehicle_type,label,pct"),
     db.from("auction_fee_brackets").select("auction,from_usd,to_usd,fee_usd,pct").order("from_usd"),
     db.from("sea_rates").select("port_code,size_class,price_usd"),
     db.from("ports").select("code,name").order("sort"),
     db.from("tariff_history").select("id,table_name,op,changed_at").order("changed_at", { ascending: false }).limit(15),
+    db.from("deposit_plans").select("*").order("sort"),
   ]);
 
   const order = ["usd_to_eur", "fx_buffer_pct", "vat_pct", "declaration_eur", "port_fees_eur", "unloading_eur", "broker_fee_eur"];
@@ -93,6 +94,13 @@ async function AdminContent() {
         </Section>
       </div>
 
+      <Section title="Užstato planai" hint="Rodomi pradžios puslapyje. Užstatas grąžinamas, jei klientas nelaimi aukciono.">
+        <PlansEditor initial={(plans.data ?? []).map((p) => ({
+          id: p.id, name: p.name, deposit_eur: String(Number(p.deposit_eur)), max_bid_usd: String(Number(p.max_bid_usd)),
+          active_bids: String(p.active_bids), popular: p.popular, active: p.active,
+        }))} />
+      </Section>
+
       <Section title="Jūros tarifai iki Klaipėdos" hint="Tuščias laukas — šiai klasei iš to uosto tarifo nėra.">
         <SeaEditor ports={ports.data ?? []} initial={seaMap} />
       </Section>
@@ -120,7 +128,7 @@ async function AdminContent() {
 
 export default function Page() {
   return (
-    <main className="mx-auto w-full max-w-6xl px-4 py-10 sm:px-6">
+    <main className="mx-auto w-full flex-1 max-w-6xl px-4 py-10 sm:px-6">
       <p className="label">Administravimas</p>
       <h1 className="mt-2 mb-8 text-3xl font-semibold tracking-tight">Tarifai</h1>
       <Suspense fallback={<p className="muted">Kraunama…</p>}>

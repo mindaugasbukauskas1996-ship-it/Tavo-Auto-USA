@@ -41,7 +41,7 @@ async function Hub() {
 
 export default function Page() {
   return (
-    <main className="mx-auto w-full max-w-6xl px-4 py-10 sm:px-6">
+    <main className="mx-auto w-full flex-1 max-w-6xl px-4 py-10 sm:px-6">
       <p className="label">Tavo auto USA</p>
       <h1 className="mt-2 mb-8 text-3xl font-semibold tracking-tight">Administravimas</h1>
       <Suspense fallback={<p className="muted">Kraunama…</p>}>

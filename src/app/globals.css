@@ -1,67 +1,105 @@
 @import "tailwindcss";
 
 :root {
-  --bg: #f6f5f1;
+  --bg: #f5f6f8;
   --surface: #ffffff;
-  --ink: #14171c;
-  --muted: #5d636d;
-  --line: #e3e1da;
-  --accent: #1f4fd1;
+  --ink: #1f1f1f;
+  --muted: #6b7280;
+  --line: #e5e7eb;
+  --accent: #0072ee;
+  --accent-dark: #005bc1;
+  --accent-soft: #f2f8fe;
   --accent-ink: #ffffff;
+  --dark: #1f1f1f;
+  --copart: #244bf3;
+  --iaai: #bc2929;
   --warn-bg: #fff6e0;
   --warn-ink: #7a5300;
   --ok-bg: #e6f4ea;
   --ok-ink: #1d6b36;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #0f1114;
-    --surface: #171a1f;
-    --ink: #eceef1;
-    --muted: #9aa1ab;
-    --line: #2a2f37;
-    --accent: #6d94ff;
-    --accent-ink: #0f1114;
-    --warn-bg: #2d2410;
-    --warn-ink: #f2cf7a;
-    --ok-bg: #12291a;
-    --ok-ink: #8fd6a5;
-  }
+  --field-bg: #f5f6f8;
 }
 
 @theme inline {
   --color-ink: var(--ink);
   --color-line: var(--line);
-  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --color-accent: var(--accent);
+  --color-muted: var(--muted);
+  --font-sans: "Open Sans Variable", "Open Sans", Arial, sans-serif;
 }
 
+html { scroll-behavior: smooth; }
+
 body {
-  background: var(--bg);
+  background: var(--surface);
   color: var(--ink);
   font-family: var(--font-sans);
 }
 
 @layer components {
-  .label { @apply text-xs font-semibold uppercase tracking-wider; color: var(--muted); }
+  .container-x { @apply mx-auto w-full max-w-[1200px] px-4 sm:px-6; }
+  .section { @apply py-14 sm:py-20; }
+  .section-gray { background: var(--bg); }
+  .h2 { @apply text-2xl font-normal tracking-tight sm:text-[32px]; }
+
+  .label { @apply text-[13px] font-semibold; color: var(--muted); }
   .muted { color: var(--muted); }
+  .link { color: var(--accent); }
+  .link:hover { text-decoration: underline; }
+
   .field {
-    @apply block w-full rounded-lg border px-3 py-2.5 text-base outline-none;
-    background: var(--surface); border-color: var(--line); color: var(--ink);
+    @apply block w-full rounded-md border px-3 py-2.5 text-[15px] outline-none transition-colors;
+    background: var(--field-bg); border-color: transparent; color: var(--ink);
   }
-  .field:focus { border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 25%, transparent); }
+  .field:focus { background: var(--surface); border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent); }
+
   .seg, .opt {
-    @apply cursor-pointer rounded-lg border px-3 py-2.5 text-left transition-colors;
+    @apply cursor-pointer rounded-md border px-3 py-2.5 text-left text-[15px] transition-colors;
     background: var(--surface); border-color: var(--line);
   }
   .seg { @apply text-center font-medium; }
-  .seg-on, .opt-on { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
-  .opt:focus-within { box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 25%, transparent); }
-  .card { @apply rounded-2xl border p-6 sm:p-8; background: var(--surface); border-color: var(--line); }
-  .warn { @apply rounded-lg px-4 py-3; background: var(--warn-bg); color: var(--warn-ink); }
-  .ok { @apply rounded-lg px-4 py-3; background: var(--ok-bg); color: var(--ok-ink); }
-  .badge { @apply rounded-md px-2 py-0.5 text-xs font-semibold; background: var(--surface); color: var(--ink); }
-  .nav-link { color: var(--muted); }
-  .nav-link:hover { color: var(--ink); }
-  .btn { @apply rounded-lg px-5 py-3 font-medium; background: var(--accent); color: var(--accent-ink); }
+  .seg:hover, .opt:hover { border-color: var(--accent); }
+  .seg-on, .opt-on { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); }
+  .opt:focus-within { box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent); }
+
+  .card { @apply rounded-xl border p-5 sm:p-6; background: var(--surface); border-color: var(--line); }
+
+  .warn { @apply rounded-md px-4 py-3; background: var(--warn-bg); color: var(--warn-ink); }
+  .ok { @apply rounded-md px-4 py-3; background: var(--ok-bg); color: var(--ok-ink); }
+
+  .badge { @apply inline-block rounded-full px-2.5 py-0.5 text-xs font-semibold; background: var(--surface); color: var(--ink); }
+  .badge-copart { background: var(--copart); color: #fff; }
+  .badge-iaai { background: var(--iaai); color: #fff; }
+  .badge-dark { background: rgba(31, 31, 31, .85); color: #fff; }
+
+  .nav-link { @apply text-[15px]; color: var(--ink); }
+  .nav-link:hover { color: var(--accent); }
+
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-md px-5 py-2.5 text-[15px] font-semibold transition-colors;
+    background: var(--accent); color: var(--accent-ink);
+  }
+  .btn:hover { background: var(--accent-dark); }
+  .btn-outline {
+    @apply inline-flex items-center justify-center gap-2 rounded-md border px-5 py-2.5 text-[15px] font-semibold transition-colors;
+    border-color: var(--accent); color: var(--accent); background: var(--surface);
+  }
+  .btn-outline:hover { background: var(--accent-soft); }
+  .btn-ghost { @apply inline-flex items-center justify-center gap-2 rounded-md px-3 py-2 text-sm font-semibold; color: var(--accent); }
+  .btn-ghost:hover { background: var(--accent-soft); }
+
+  .chip {
+    @apply inline-flex items-center gap-1.5 rounded px-2 py-0.5 font-mono text-xs font-semibold;
+    background: var(--accent); color: #fff;
+  }
+
+  .tab { @apply border-b-2 border-transparent px-3 py-2 text-[15px]; color: var(--ink); }
+  .tab:hover { color: var(--accent); }
+  .tab-on { border-color: var(--accent); color: var(--accent); }
+
+  .toggle { @apply relative inline-flex h-5 w-9 shrink-0 cursor-pointer items-center rounded-full transition-colors; background: #d1d5db; }
+  .toggle::after { content: ""; @apply absolute left-0.5 h-4 w-4 rounded-full bg-white transition-transform; }
+  input:checked + .toggle { background: var(--accent); }
+  input:checked + .toggle::after { transform: translateX(16px); }
+  input:focus-visible + .toggle { box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 30%, transparent); }
 }

@@ -7,17 +7,19 @@ export const metadata: Metadata = { title: "Prisijungimas — Tavo auto USA" };
 async function Form({ searchParams }: { searchParams: PageProps<"/prisijungti">["searchParams"] }) {
   const sp = await searchParams;
   const next = typeof sp.next === "string" ? sp.next : "/";
-  return <AuthForm next={next} linkError={sp.klaida === "nuoroda"} />;
+  const mode = sp.rezimas === "registracija" ? "up" : "in";
+  return <AuthForm key={mode} next={next} linkError={sp.klaida === "nuoroda"} initialMode={mode} />;
 }
 
 export default function Page({ searchParams }: PageProps<"/prisijungti">) {
   return (
-    <main className="mx-auto w-full max-w-md px-4 py-16">
-      <p className="label">Tavo auto USA</p>
-      <h1 className="mt-2 mb-8 text-3xl font-semibold tracking-tight">Paskyra</h1>
+    <main className="flex-1 px-4 py-14" style={{ background: "var(--bg)" }}>
+      <div className="mx-auto w-full max-w-md">
+      <h1 className="mb-6 text-center text-3xl font-normal tracking-tight">Prisijungimas ir registracija</h1>
       <Suspense fallback={<div className="card muted">Kraunama…</div>}>
         <Form searchParams={searchParams} />
       </Suspense>
+      </div>
     </main>
   );
 }

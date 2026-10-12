@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { saveDuty, saveFees, saveSea, saveSettings, type FeeRow, type SaveResult } from "./actions.ts";
+import { saveDuty, saveFees, savePlans, saveSea, saveSettings, type FeeRow, type PlanRow, type SaveResult } from "./actions.ts";
 
 function useSaver() {
   const [pending, start] = useTransition();
@@ -197,6 +197,48 @@ export function SeaEditor({ ports, initial }: { ports: { code: string; name: str
       <SaveBar {...s} onSave={() => s.run(() => saveSea(
         Object.entries(vals).map(([k, price]) => { const [port, size] = k.split("|"); return { port, size, price }; }),
       ))} />
+    </>
+  );
+}
+
+/* ---------- Užstato planai ---------- */
+
+export function PlansEditor({ initial }: { initial: PlanRow[] }) {
+  const [rows, setRows] = useState(initial);
+  const s = useSaver();
+  const set = (i: number, patch: Partial<PlanRow>) => { s.clear(); setRows(rows.map((r, j) => (j === i ? { ...r, ...patch } : r))); };
+  return (
+    <>
+      <div className="overflow-x-auto">
+        <table className="w-full min-w-[640px] text-sm">
+          <thead>
+            <tr className="muted text-left text-xs">
+              <th className="pb-2 pr-2 font-semibold">Pavadinimas</th>
+              <th className="pb-2 pr-2 font-semibold">Užstatas, €</th>
+              <th className="pb-2 pr-2 font-semibold">Maks. statymas, $</th>
+              <th className="pb-2 pr-2 font-semibold">Aktyvūs statymai</th>
+              <th className="pb-2 pr-2 font-semibold">Populiariausias</th>
+              <th className="pb-2 font-semibold">Rodomas</th>
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((r, i) => (
+              <tr key={r.id}>
+                <td className="py-1 pr-2"><input aria-label="Pavadinimas" className="field py-1.5" value={r.name} onChange={(e) => set(i, { name: e.target.value })} /></td>
+                <td className="py-1 pr-2"><input aria-label="Užstatas" inputMode="decimal" className="field py-1.5 tabular-nums" value={r.deposit_eur} onChange={(e) => set(i, { deposit_eur: e.target.value })} /></td>
+                <td className="py-1 pr-2"><input aria-label="Maksimalus statymas" inputMode="decimal" className="field py-1.5 tabular-nums" value={r.max_bid_usd} onChange={(e) => set(i, { max_bid_usd: e.target.value })} /></td>
+                <td className="py-1 pr-2"><input aria-label="Aktyvūs statymai" inputMode="numeric" className="field py-1.5 tabular-nums" value={r.active_bids} onChange={(e) => set(i, { active_bids: e.target.value })} /></td>
+                <td className="py-1 pr-2 text-center">
+                  <input type="radio" name="popular" aria-label="Populiariausias" checked={r.popular}
+                    onChange={() => { s.clear(); setRows(rows.map((x, j) => ({ ...x, popular: j === i }))); }} />
+                </td>
+                <td className="py-1 text-center"><input type="checkbox" aria-label="Rodomas" checked={r.active} onChange={(e) => set(i, { active: e.target.checked })} /></td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <SaveBar {...s} onSave={() => s.run(() => savePlans(rows))} />
     </>
   );
 }

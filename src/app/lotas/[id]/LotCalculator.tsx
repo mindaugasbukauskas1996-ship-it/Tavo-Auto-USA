@@ -25,12 +25,11 @@ export default function LotCalculator({
     : null;
 
   return (
-    <section className="card">
-      <h2 className="text-lg font-semibold">Kiek kainuos Klaipėdoje?</h2>
-      <p className="muted mt-1 text-sm">Aikštelė: {yard.label} ({yard.auction})</p>
-      <div className="mt-4 grid gap-3 sm:grid-cols-2">
+    <div>
+      <p className="muted text-sm">Aikštelė: {yard.label} ({yard.auction})</p>
+      <div className="mt-3 grid gap-3 sm:grid-cols-2">
         <div>
-          <label htmlFor="lot-bid" className="label">Jūsų maksimali kaina, $</label>
+          <label htmlFor="lot-bid" className="label">Automobilio kaina, $</label>
           <input id="lot-bid" inputMode="decimal" value={bid} onChange={(e) => setBid(e.target.value)} className="field mt-2 tabular-nums" />
         </div>
         <div>
@@ -55,6 +54,6 @@ export default function LotCalculator({
           </p>
         )}
       </div>
-    </section>
+    </div>
   );
 }
