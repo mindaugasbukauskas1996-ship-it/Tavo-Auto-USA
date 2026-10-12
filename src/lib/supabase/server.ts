@@ -1,4 +1,5 @@
 import "server-only";
+import { cache } from "react";
 import { cookies } from "next/headers";
 import { createServerClient } from "@supabase/ssr";
 
@@ -23,20 +24,22 @@ export async function supabaseServer() {
   );
 }
 
-/** Grąžina prisijungusį vartotoją ir jo rolę arba null. */
-export async function currentUser() {
+/** Grąžina prisijungusį vartotoją ir jo rolę arba null (vienai užklausai — vienas kvietimas). */
+export const currentUser = cache(async () => {
   const supabase = await supabaseServer();
   const { data } = await supabase.auth.getUser();
   if (!data.user) return null;
   const { data: profile } = await supabase
     .from("profiles")
-    .select("role, full_name")
+    .select("role, full_name, first_name, last_name")
     .eq("id", data.user.id)
     .maybeSingle();
+  const name = [profile?.first_name, profile?.last_name].filter(Boolean).join(" ") || profile?.full_name || "";
   return {
     id: data.user.id,
     email: data.user.email ?? "",
-    name: profile?.full_name ?? "",
+    name,
+    firstName: profile?.first_name || name.split(" ")[0] || "",
     isAdmin: profile?.role === "admin",
   };
-}
+});

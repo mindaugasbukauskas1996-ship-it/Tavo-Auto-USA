@@ -15,6 +15,11 @@ JAV aukcionų (Copart, IAAI) automobilių importo į Klaipėdą svetainė.
   Copart / IAAI mokesčių lentelės (galima įklijuoti iš Excel), jūros tarifai, pakeitimų istorija.
   Administratoriaus rolė suteikiama DB: `update profiles set role = 'admin' where email = '…';`
 
+- `/paskyra` — kliento paskyra: mėgstamiausi, statymai, planai, sąskaitos, profilis, slaptažodis.
+- Statymas loto puslapyje: tikrinamas aktyvus planas, maks. suma ir aktyvių statymų limitas (DB funkcija `place_bid`).
+- `/admin/statymai` — statymų būsenos (laukia / pateikta / laimėta / pralaimėta), galutinė kaina, pastaba klientui.
+- `/admin/klientai` — užstatų aktyvavimas ir grąžinimas, klientų sąrašas, Telegram pranešimų nustatymai.
+
 ## Paleidimas
 
 ```bash

@@ -4,7 +4,7 @@ import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import { getLot, lotIdFromSlug, lotPath } from "@/lib/catalog.ts";
 import { loadTariffs, loadYard } from "@/lib/tariffs.ts";
-import { currentUser } from "@/lib/supabase/server.ts";
+import { currentUser, supabaseServer } from "@/lib/supabase/server.ts";
 import { guessSizeClass, guessVehicleType } from "@/lib/calculator/vehicle.ts";
 import { fmtDate, fmtKm, ltDamage, ltDrive, ltFuel, ltRunCondition, ltSeller, ltTransmission, timeLeft } from "@/lib/lt.ts";
 import { usd } from "@/components/Breakdown.tsx";
@@ -14,6 +14,7 @@ import Gallery from "./Gallery.tsx";
 import LotCalculator from "./LotCalculator.tsx";
 import CopyChip from "./CopyChip.tsx";
 import BidBox from "./BidBox.tsx";
+import FavoriteButton from "./FavoriteButton.tsx";
 
 export const metadata: Metadata = { title: "Automobilis — Tavo auto USA" };
 
@@ -47,6 +48,17 @@ async function LotView({ params }: { params: Promise<{ id: string }> }) {
     lot.yard_id ? loadYard(lot.yard_id) : Promise.resolve(null),
     currentUser(),
   ]);
+  let myBid: { max_bid_usd: number; status: string } | null = null;
+  let isFav = false;
+  if (user) {
+    const db = await supabaseServer();
+    const [b, f] = await Promise.all([
+      db.from("bids").select("max_bid_usd,status").eq("lot_id", lot.id).in("status", ["pending", "placed", "won", "lost"]).order("created_at", { ascending: false }).limit(1).maybeSingle(),
+      db.from("favorites").select("lot_id").eq("lot_id", lot.id).maybeSingle(),
+    ]);
+    myBid = b.data ? { max_bid_usd: Number(b.data.max_bid_usd), status: b.data.status } : null;
+    isFav = !!f.data;
+  }
   const size = guessSizeClass(lot.vehicle_type, lot.body_style);
   const vehicleType = guessVehicleType(size, lot.year);
   const startBid = (lot.current_bid_usd ?? 0) > 1 ? lot.current_bid_usd! + 100 : lot.buy_now_usd ?? 3000;
@@ -88,7 +100,10 @@ async function LotView({ params }: { params: Promise<{ id: string }> }) {
 
         <div className="space-y-5">
           <section className="rounded-xl border border-line bg-white p-5">
-            <h1 className="text-2xl font-semibold tracking-tight">{lot.title}</h1>
+            <div className="flex items-start justify-between gap-3">
+              <h1 className="text-2xl font-semibold tracking-tight">{lot.title}</h1>
+              <FavoriteButton lotId={lot.id} initial={isFav} loggedIn={!!user} lotPath={lotPath(lot.id)} />
+            </div>
             <p className="muted mt-1 flex items-center gap-1 text-sm"><IconPin size={15} /> Lokacija: {lotLocation(lot)}</p>
             <div className="mt-4 border-t border-line pt-3">
               <Line k="Pardavėjas" v={ltSeller(lot.seller_type) ?? "Nenurodytas"} />
@@ -101,16 +116,22 @@ async function LotView({ params }: { params: Promise<{ id: string }> }) {
             <div className="mt-4 rounded-lg p-4" style={{ background: "var(--bg)" }}>
               <Line k="Dabartinė būsena" v={ended ? "Aukcionas baigėsi" : left ? `Liko ${left}` : "Vyksta aukcionas"} />
               <Line k="Aukciono data" v={fmtDate(lot.auction_at)} />
-              <div className="mt-3 grid grid-cols-2 gap-3 border-t border-line pt-3">
+              <div className="mt-3 grid grid-cols-3 gap-3 border-t border-line pt-3">
                 <div>
                   <p className="muted text-xs">{ended && lot.sale_price_usd ? "Parduota už" : "Dabartinis statymas"}</p>
-                  <p className="text-xl font-bold tabular-nums">
+                  <p className="text-lg font-bold tabular-nums">
                     {ended && lot.sale_price_usd ? usd(lot.sale_price_usd) : (lot.current_bid_usd ?? 0) > 1 ? usd(lot.current_bid_usd!) : "—"}
+                  </p>
+                </div>
+                <div className="text-center">
+                  <p className="muted text-xs">Mano statymas</p>
+                  <p className="text-lg font-bold tabular-nums" style={{ color: myBid ? "var(--accent)" : undefined }}>
+                    {myBid ? usd(myBid.max_bid_usd) : "$0"}
                   </p>
                 </div>
                 <div className="text-right">
                   <p className="muted text-xs">Pirkti dabar</p>
-                  <p className="text-xl font-bold tabular-nums" style={{ color: lot.buy_now_usd ? "var(--accent)" : undefined }}>
+                  <p className="text-lg font-bold tabular-nums" style={{ color: lot.buy_now_usd ? "var(--accent)" : undefined }}>
                     {lot.buy_now_usd ? usd(lot.buy_now_usd) : "—"}
                   </p>
                 </div>
@@ -119,7 +140,8 @@ async function LotView({ params }: { params: Promise<{ id: string }> }) {
 
             {!ended && (
               <div className="mt-4">
-                <BidBox start={Math.round(startBid)} loggedIn={!!user} lotPath={lotPath(lot.id)} />
+                <BidBox lotId={lot.id} start={Math.round(startBid)} loggedIn={!!user} lotPath={lotPath(lot.id)}
+                  myBid={myBid && ["pending", "placed"].includes(myBid.status) ? myBid.max_bid_usd : null} />
               </div>
             )}
           </section>

@@ -8,8 +8,8 @@ export const metadata: Metadata = { title: "Administravimas — Tavo auto USA" }
 
 const SECTIONS = [
   { href: "/admin/tarifai", title: "Tarifai", text: "Kursas, PVM, muitas, aukcionų mokesčiai, jūros tarifai.", ready: true },
-  { href: "", title: "Statymai", text: "Klientų statymai, patvirtinimas ir rezultatai.", ready: false },
-  { href: "", title: "Klientai", text: "Narystės, limitai, blokavimas.", ready: false },
+  { href: "/admin/statymai", title: "Statymai", text: "Klientų statymai, būsenos ir rezultatai.", ready: true },
+  { href: "/admin/klientai", title: "Klientai ir planai", text: "Užstatų patvirtinimas, grąžinimai, Telegram pranešimai.", ready: true },
   { href: "", title: "Katalogo sinchronizacija", text: "API tiekėjo duomenų būsena.", ready: false },
 ];
 

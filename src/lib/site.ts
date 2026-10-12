@@ -7,6 +7,9 @@ export const SITE = {
   telegram: "", // pvz. "https://t.me/tavoautousa"
   facebook: "",
   instagram: "",
+  // Užstato pavedimo rekvizitai (rodomi klientui „Sąskaitose“). Tušti — rodomas pranešimas, kad instrukcijas atsiųsime.
+  bankRecipient: "",
+  bankIban: "",
 };
 
 export const telHref = (p: string) => `tel:${p.replace(/\s/g, "")}`;
