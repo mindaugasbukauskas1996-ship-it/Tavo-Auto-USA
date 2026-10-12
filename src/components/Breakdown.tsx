@@ -2,8 +2,7 @@ import type { CalcResult } from "@/lib/calculator/types.ts";
 
 export const eur = (n: number) =>
   new Intl.NumberFormat("lt-LT", { style: "currency", currency: "EUR", maximumFractionDigits: 0 }).format(n);
-export const usd = (n: number) =>
-  new Intl.NumberFormat("lt-LT", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(n);
+export const usd = (n: number) => `$${new Intl.NumberFormat("lt-LT", { maximumFractionDigits: 0 }).format(n)}`;
 
 /** Galutinė kaina ir eilučių išskaidymas — naudoja skaičiuoklė ir loto puslapis. */
 export default function Breakdown({

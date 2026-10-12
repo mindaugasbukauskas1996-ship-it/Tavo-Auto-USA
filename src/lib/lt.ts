@@ -26,7 +26,7 @@ export const ltRunCondition = (v?: string | null) =>
   pick(v, [
     [/run.*drive.*verif/i, "Vedasi, važiuoja (patikrinta)"], [/run.*drive/i, "Vedasi, važiuoja"],
     [/engine start|starts/i, "Užsiveda"], [/stationary|does not start|won.?t start/i, "Nesiveda"],
-    [/unknown|no info/i, "Nėra informacijos"],
+    [/unknown|no info|^default$/i, "Nėra informacijos"],
   ]);
 
 export const ltDamage = (v?: string | null) =>

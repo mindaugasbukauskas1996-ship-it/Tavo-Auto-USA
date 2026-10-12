@@ -16,7 +16,7 @@ export function PriceBox({ lot }: { lot: Lot }) {
     <div className="grid grid-cols-2 gap-2 rounded-lg px-3 py-2.5 text-center" style={{ background: "var(--accent-soft)" }}>
       <div>
         <p className="muted text-xs">{sold ? "Parduota už" : "Paskutinis statymas"}</p>
-        <p className="font-bold tabular-nums">{sold ? usd(lot.sale_price_usd!) : lot.current_bid_usd ? usd(lot.current_bid_usd) : "—"}</p>
+        <p className="font-bold tabular-nums">{sold ? usd(lot.sale_price_usd!) : (lot.current_bid_usd ?? 0) > 1 ? usd(lot.current_bid_usd!) : "—"}</p>
       </div>
       <div>
         <p className="muted text-xs">Pirkti dabar kaina</p>

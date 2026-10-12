@@ -21,7 +21,7 @@ export default function LotRow({ lot }: { lot: Lot }) {
   const left = timeLeft(lot.auction_at);
   const ended = lot.auction_state === "ended" || !!lot.outcome;
   return (
-    <article className="grid gap-4 rounded-xl border border-line bg-white p-3 transition-shadow hover:shadow-md sm:grid-cols-[240px_minmax(0,1fr)] lg:grid-cols-[260px_minmax(0,1fr)_200px]">
+    <article className="grid gap-4 rounded-xl border border-line bg-white p-3 transition-shadow hover:shadow-md sm:grid-cols-[240px_minmax(0,1fr)] lg:grid-cols-[260px_minmax(0,1fr)_220px]">
       <Link href={href} className="relative block aspect-[4/3] overflow-hidden rounded-lg bg-[var(--bg)]">
         {lot.thumb && <img src={lot.thumb} alt={lot.title ?? ""} loading="lazy" className="h-full w-full object-cover" />}
         <span className="badge badge-dark absolute left-2 top-2">

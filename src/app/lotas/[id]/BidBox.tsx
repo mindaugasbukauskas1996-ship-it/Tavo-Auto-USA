@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { useState } from "react";
 
-const fmt = (n: number) => new Intl.NumberFormat("lt-LT", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(n);
+const fmt = (n: number) => `$${new Intl.NumberFormat("lt-LT", { maximumFractionDigits: 0 }).format(n)}`;
 
 /** Statymo valdiklis: − suma +. Statymų priėmimas bus įjungtas kitame modulyje. */
 export default function BidBox({ start, step = 100, loggedIn, lotPath }: { start: number; step?: number; loggedIn: boolean; lotPath: string }) {

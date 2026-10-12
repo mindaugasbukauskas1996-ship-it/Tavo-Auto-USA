@@ -49,7 +49,7 @@ async function LotView({ params }: { params: Promise<{ id: string }> }) {
   ]);
   const size = guessSizeClass(lot.vehicle_type, lot.body_style);
   const vehicleType = guessVehicleType(size, lot.year);
-  const startBid = lot.current_bid_usd ? lot.current_bid_usd + 100 : lot.buy_now_usd ?? 3000;
+  const startBid = (lot.current_bid_usd ?? 0) > 1 ? lot.current_bid_usd! + 100 : lot.buy_now_usd ?? 3000;
   const ended = lot.auction_state === "ended" || !!lot.outcome;
   const left = timeLeft(lot.auction_at);
   const docOk = /clean|certificate of title/i.test(lot.sale_document ?? "");
@@ -105,7 +105,7 @@ async function LotView({ params }: { params: Promise<{ id: string }> }) {
                 <div>
                   <p className="muted text-xs">{ended && lot.sale_price_usd ? "Parduota už" : "Dabartinis statymas"}</p>
                   <p className="text-xl font-bold tabular-nums">
-                    {ended && lot.sale_price_usd ? usd(lot.sale_price_usd) : lot.current_bid_usd ? usd(lot.current_bid_usd) : "—"}
+                    {ended && lot.sale_price_usd ? usd(lot.sale_price_usd) : (lot.current_bid_usd ?? 0) > 1 ? usd(lot.current_bid_usd!) : "—"}
                   </p>
                 </div>
                 <div className="text-right">
