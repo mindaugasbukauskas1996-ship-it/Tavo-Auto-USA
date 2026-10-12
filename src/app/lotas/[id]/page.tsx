@@ -89,7 +89,7 @@ async function LotView({ params }: { params: Promise<{ id: string }> }) {
             <Spec k="Pagrindinė žala" v={ltDamage(lot.primary_damage)} />
             <Spec k="Papildoma žala" v={ltDamage(lot.secondary_damage)} />
             <Spec k="Variklis" v={lot.engine} />
-            <Spec k="Variklio būsena" v={ltRunCondition(lot.run_condition)} highlight />
+            <Spec k="Variklio būsena" v={ltRunCondition(lot.run_condition)} highlight={/run/i.test(lot.run_condition ?? "")} />
             <Spec k="Transmisija" v={ltTransmission(lot.transmission)} />
             <Spec k="Spalva" v={lot.color} />
             <Spec k="Odometras" v={fmtKm(lot.odometer_mi)} />
